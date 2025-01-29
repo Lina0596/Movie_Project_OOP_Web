@@ -55,11 +55,3 @@ class StorageJson(IStorage):
         json_movies = json.dumps(movies, indent=4)
         with open(self.file_path, "w") as movie_data:
             movie_data.write(json_movies)
-
-
-def main():
-    pass
-
-
-if __name__ == "__main__":
-    main()
