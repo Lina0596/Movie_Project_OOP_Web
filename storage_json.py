@@ -39,14 +39,14 @@ class StorageJson(IStorage):
             movies = json.loads(movie_data.read())
         return movies
 
-    def add_movie(self, title, year, rating):
+    def add_movie(self, title, year, rating, poster):
         """
         Adds a movie to the movies database.
         Loads the information from the JSON file, add the movie,
         and saves it.
         """
         movies = self.list_movies()
-        movies[title] = {"year": year, "rating": rating}
+        movies[title] = {"year": year, "rating": rating, "poster" : poster}
         json_movies = json.dumps(movies, indent=4)
         with open(self.file_path, "w") as movie_data:
             movie_data.write(json_movies)

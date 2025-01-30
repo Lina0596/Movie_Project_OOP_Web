@@ -1,10 +1,12 @@
 import statistics
 import random
+import requests
 
 
 class MovieApp:
     def __init__(self, storage):
         self._storage = storage
+
 
     def _list_movies(self):
         """
@@ -16,41 +18,35 @@ class MovieApp:
         for movie, movie_info in movies.items():
             print(f"{movie} ({movie_info["year"]}): {movie_info["rating"]}")
 
+
     def _add_movie(self):
         """
         Asks the user to enter a movie name and a rating and adds it to the database.
         """
-        movies = self._storage.list_movies()
-        valid_title = False
-        while not valid_title:
-            try:
-                title = input("\nEnter the name of the movie: ")
-                if title == "":
-                    raise ValueError("You did not enter the title of the movie.")
-                elif title in movies:
-                    print(f"Movie {title} already exists!")
-                    return
-                valid_title = True
-            except ValueError as e:
-                print(f"Invalid input: {e}")
-        valid_year = False
-        while not valid_year:
-            try:
-                year = int(input("Enter the year of the movie in the format YYYY: "))
-                valid_year = True
-            except ValueError as e:
-                print(f"Invalid input: {e}")
-        valid_rating = False
-        while not valid_rating:
-            try:
-                rating = float(input("Enter the rating of the movie (1-10): "))
-                if rating < 1 or rating > 10:
-                    raise ValueError("Please enter a rating between 1 and 10.")
-                valid_rating = True
-            except ValueError as e:
-                print(f"Invalid input: {e}")
-        self._storage.add_movie(title, year, rating)
-        print(f"\nYou've added the movie '{title}' with the year {year} and the rating {rating}")
+        try:
+            movies = self._storage.list_movies()
+            title = input("\nEnter the name of the movie: ")
+            if title == "":
+                raise ValueError("You entered an empty title")
+            elif title in movies:
+                print(f"Movie {title} already exists!")
+            else:
+                API_KEY = "93630ab7"
+                url = f"http://www.omdbapi.com/?apikey={API_KEY}&t={title}"
+                request_movie = requests.get(url)
+                movie = request_movie.json()
+                if movie["Response"] == "True":
+                    movie_title = movie["Title"]
+                    year = movie["Year"]
+                    rating = movie["imdbRating"]
+                    poster = movie["Poster"]
+                    self._storage.add_movie(movie_title, year, rating, poster)
+                    print(f"\nYou've added the movie '{title}'")
+                elif movie["Response"] == "False":
+                    print(f"\n{movie["Error"]}")
+        except requests.exceptions.ConnectionError:
+            print("We can not connect with the API...")
+
 
     def _delete_movie(self):
         """
@@ -59,16 +55,14 @@ class MovieApp:
         movies = self._storage.list_movies()
         valid_title = False
         while not valid_title:
-            try:
-                title = input("\nEnter the name of the movie you want to delete: ")
-                if title not in movies:
-                    raise ValueError("Movie is not in dictionary.")
-                elif title in movies:
-                    self._storage.delete_movie(title)
-                    print(f"\nYou've delete the movie '{title}'.")
-                    valid_title = True
-            except ValueError as e:
-                print(f"Invalid input: {e}")
+            title = input("\nEnter the name of the movie you want to delete: ")
+            if title not in movies:
+                raise ValueError("Movie is not in dictionary.")
+            elif title in movies:
+                self._storage.delete_movie(title)
+                print(f"\nYou've delete the movie '{title}'.")
+                valid_title = True
+
 
     def _update_movie(self):
         """
@@ -99,6 +93,7 @@ class MovieApp:
         self._storage.update_movie(title, rating)
         print(f"\nYou've updated the movie '{title}' with a rating of {rating}.")
 
+
     def _stats_movies(self):
         """
         Prints statistics about the movies in the database.
@@ -108,13 +103,13 @@ class MovieApp:
         # Calculates the average of the ratings
         sum_val = 0
         for movie, movie_info in movies.items():
-            sum_val += movie_info["rating"]
+            sum_val += float(movie_info["rating"])
         average_rating = sum_val / len(movies)
 
         # Calculates the median of the ratings
         listed_ratings = []
         for movie, movie_info in movies.items():
-            listed_ratings.append(movie_info["rating"])
+            listed_ratings.append(float(movie_info["rating"]))
         median_rating = statistics.median(listed_ratings)
 
         # Calculates the best rated and the worst rated movies
@@ -136,6 +131,7 @@ class MovieApp:
         for worst_movie, worst_rating in dictionary_worst_movies.items():
             print(f"Worst movie: {worst_movie}, {worst_rating}")
 
+
     def _random_movie(self):
         """
         Prints a random movie and it’s rating.
@@ -144,6 +140,7 @@ class MovieApp:
         listed_items = list(movies.items())
         random_movie_title, random_movie_infos = random.choice(listed_items)
         print(f"\n{random_movie_title}: {random_movie_infos["rating"]}")
+
 
     def _search_movie(self):
         """
@@ -157,6 +154,7 @@ class MovieApp:
             if part_of_name_movie.lower() in movie.lower():
                 print(f"{movie}: {movie_info["rating"]}")
 
+
     def _sorting_movies(self):
         """
         Prints all the movies and their ratings, in descending order by the rating.
@@ -167,9 +165,9 @@ class MovieApp:
             most_frequent_movie = ""
             most_frequent_rating = 0
             for movie, movie_info in copy_of_dictionary_of_movies.items():
-                if movie_info["rating"] >= most_frequent_rating:
+                if float(movie_info["rating"]) >= most_frequent_rating:
                     most_frequent_movie = movie
-                    most_frequent_rating = movie_info["rating"]
+                    most_frequent_rating = float(movie_info["rating"])
             print(f"{most_frequent_movie}: {most_frequent_rating}")
             del copy_of_dictionary_of_movies[most_frequent_movie]
 

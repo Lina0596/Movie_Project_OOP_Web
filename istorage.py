@@ -10,12 +10,14 @@ class IStorage(ABC):
         """
         pass
 
+
     @abstractmethod
-    def add_movie(self, title, year, rating):
+    def add_movie(self, title, year, rating, poster):
         """
         Asks the user to enter a movie name and a rating and adds it to the database.
         """
         pass
+
 
     @abstractmethod
     def delete_movie(self, title):
@@ -23,6 +25,7 @@ class IStorage(ABC):
         Asks the user to enter a movie name, and deletes it.
         """
         pass
+
 
     @abstractmethod
     def update_movie(self, title, rating):

@@ -11,7 +11,7 @@ class StorageCsv(IStorage):
             with open (self.file_path, "w") as movie_data:
                 movie_data.write(movies)
         else:
-            movies = ("Title,Year,Rating\n"
+            movies = ("Title,Year,Rating,Poster\n"
                       "The Shawshank Redemption,1994,9.5\n"
                       "Pulp Fiction,1994,8.8\n"
                       "The Room,2003,3.6\n"
@@ -44,7 +44,7 @@ class StorageCsv(IStorage):
             return movies
 
 
-    def add_movie(self, title, year, rating):
+    def add_movie(self, title, year, rating, poster):
         """
         Adds a movie to the movies database.
         Loads the information from the JSON file, add the movie,
@@ -54,7 +54,7 @@ class StorageCsv(IStorage):
             movies = movie_data.read()
         with open(self.file_path, "w") as movie_data:
             movie_data.write(movies)
-            movie_data.write(f"{title},{year},{rating}\n")
+            movie_data.write(f"{title},{year},{rating},{poster}\n")
 
     def delete_movie(self, title):
         """
