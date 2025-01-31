@@ -173,6 +173,9 @@ class MovieApp:
 
 
     def _generate_website(self):
+        """
+        Writes the movie data in an html file and generates a website.
+        """
         movies = self._storage.list_movies()
         content = ''
         for movie, movie_info in movies.items():
@@ -184,10 +187,10 @@ class MovieApp:
             content += f'      <div class="movie-year">{movie_info["year"]}</div>\n'
             content += '  </div>\n'
             content += '</li>\n'
-        with open("index_template.html", "r") as template_html_data:
+        with open("website/index_template.html", "r") as template_html_data:
             template_html_data = template_html_data.read()
             new_html_data = template_html_data.replace("__TEMPLATE_MOVIE_GRID__", content)
-        with open("index.html", "w") as html_file:
+        with open("website/index.html", "w") as html_file:
             html_file.write(new_html_data)
         print("Website was generated successfully.")
 

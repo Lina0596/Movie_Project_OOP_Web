@@ -1,12 +1,11 @@
+from Movie_Project_OOP_Web.storage.storage_json import StorageJson
 from movie_app import MovieApp
-from storage_json import StorageJson
-from storage_csv import StorageCsv
-import requests
+from Movie_Project_OOP_Web.storage.storage_csv import StorageCsv
 
 
 def main():
     try:
-        storage = StorageCsv('movies.csv')
+        storage = StorageJson('movies.json')
         movie_app = MovieApp(storage)
         movie_app.run()
     except ValueError as e:

@@ -1,11 +1,11 @@
-from istorage import IStorage
+from Movie_Project_OOP_Web.storage.istorage import IStorage
 import os
 import requests
 
 
 class StorageCsv(IStorage):
     def __init__(self, file_path):
-        self.file_path = file_path
+        self.file_path = f"data/{file_path}"
         if os.path.exists(self.file_path):
             with open(self.file_path, "r") as movie_data:
                 movies = movie_data.read()
