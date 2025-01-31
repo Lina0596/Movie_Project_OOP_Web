@@ -1,5 +1,6 @@
 from istorage import IStorage
 import os
+import requests
 
 
 class StorageCsv(IStorage):
@@ -11,20 +12,27 @@ class StorageCsv(IStorage):
             with open (self.file_path, "w") as movie_data:
                 movie_data.write(movies)
         else:
-            movies = ("Title,Year,Rating,Poster\n"
-                      "The Shawshank Redemption,1994,9.5\n"
-                      "Pulp Fiction,1994,8.8\n"
-                      "The Room,2003,3.6\n"
-                      "The Godfather,1972,9.2\n"
-                      "The Godfather Part II,1974,9.0\n"
-                      "The Dark Knight,2008,9.0\n"
-                      "12 Angry Men,1957,8.9\n"
-                      "Everything Everywhere All At Once,2022,8.9\n"
-                      "Forrest Gump,1994,8.8\n"
-                      "Star Wars Episode V,1980,8.7\n"
-                      )
+            movies = "Title,Year,Rating,Poster\n"
+            titles = ["The Shawshank Redemption",
+                      "Pulp Fiction", "The Room",
+                      "The Godfather",
+                      "The Godfather Part II",
+                      "The Dark Knight",
+                      "12 Angry Men",
+                      "Everything Everywhere All At Once",
+                      "Forrest Gump",
+                      "Star Wars Episode V"]
+            api_key = "93630ab7"
+            for title in titles:
+                url = f"http://www.omdbapi.com/?apikey={api_key}&t={title}"
+                request_movie = requests.get(url)
+                movie = request_movie.json()
+                movies += f"{movie["Title"]},{movie["Year"]},{movie["imdbRating"]},{movie["Poster"]}\n"
             with open (self.file_path, "w") as movie_data:
                 movie_data.write(movies)
+
+    def __getitem__(self, item):
+        return
 
 
     def list_movies(self):
@@ -39,8 +47,9 @@ class StorageCsv(IStorage):
                 split_line = movie.split(",")
                 title = split_line[0]
                 year = split_line[1]
-                rating = split_line[2][:-1]
-                movies[title] = {"year": year, "rating": rating}
+                rating = split_line[2]
+                poster = split_line[3][:-1]
+                movies[title] = {"year": year, "rating": rating, "poster": poster}
             return movies
 
 
@@ -56,6 +65,7 @@ class StorageCsv(IStorage):
             movie_data.write(movies)
             movie_data.write(f"{title},{year},{rating},{poster}\n")
 
+
     def delete_movie(self, title):
         """
         Deletes a movie from the movies database.
@@ -70,7 +80,6 @@ class StorageCsv(IStorage):
         with open(self.file_path, "w") as movie_data:
             movie_data.write("Title,Year,Rating\n")
             movie_data.write(updated_movies)
-
 
 
     def update_movie(self, title, rating):

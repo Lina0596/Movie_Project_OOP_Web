@@ -1,6 +1,7 @@
 from istorage import IStorage
 import json
 import os
+import requests
 
 
 class StorageJson(IStorage):
@@ -13,19 +14,23 @@ class StorageJson(IStorage):
             with open(self.file_path, "w") as movie_data:
                 movie_data.write(json_movies)
         else:
-            self.movies = {
-                "The Shawshank Redemption": {"year": 1994, "rating": 9.5},
-                "Pulp Fiction": {"year": 1994, "rating": 8.8},
-                "The Room": {"year": 2003, "rating": 3.6},
-                "The Godfather": {"year": 1972, "rating": 9.2},
-                "The Godfather Part II": {"year": 1974, "rating": 9.0},
-                "The Dark Knight": {"year": 2008, "rating": 9.0},
-                "12 Angry Men": {"year": 1957, "rating": 8.9},
-                "Everything Everywhere All At Once": {"year": 2022, "rating": 8.9},
-                "Forrest Gump": {"year": 1994, "rating": 8.8},
-                "Star Wars Episode V": {"year": 1980, "rating": 8.7}
-            }
-            json_movies = json.dumps(self.movies, indent=4)
+            movies = {}
+            titles = ["The Shawshank Redemption",
+                      "Pulp Fiction", "The Room",
+                      "The Godfather",
+                      "The Godfather Part II",
+                      "The Dark Knight",
+                      "12 Angry Men",
+                      "Everything Everywhere All At Once",
+                      "Forrest Gump",
+                      "Star Wars Episode V"]
+            api_key = "93630ab7"
+            for title in titles:
+                url = f"http://www.omdbapi.com/?apikey={api_key}&t={title}"
+                request_movie = requests.get(url)
+                movie = request_movie.json()
+                movies[movie["Title"]] = {"year": movie["Year"], "rating": movie["imdbRating"], "poster": movie["Poster"]}
+            json_movies = json.dumps(movies, indent=4)
             with open(self.file_path, "w") as movie_data:
                 movie_data.write(json_movies)
 
@@ -39,6 +44,7 @@ class StorageJson(IStorage):
             movies = json.loads(movie_data.read())
         return movies
 
+
     def add_movie(self, title, year, rating, poster):
         """
         Adds a movie to the movies database.
@@ -51,6 +57,7 @@ class StorageJson(IStorage):
         with open(self.file_path, "w") as movie_data:
             movie_data.write(json_movies)
 
+
     def delete_movie(self, title):
         """
         Deletes a movie from the movies database.
@@ -62,6 +69,7 @@ class StorageJson(IStorage):
         json_movies = json.dumps(movies, indent=4)
         with open(self.file_path, "w") as movie_data:
             movie_data.write(json_movies)
+
 
     def update_movie(self, title, rating):
         """

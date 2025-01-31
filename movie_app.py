@@ -31,16 +31,16 @@ class MovieApp:
             elif title in movies:
                 print(f"Movie {title} already exists!")
             else:
-                API_KEY = "93630ab7"
-                url = f"http://www.omdbapi.com/?apikey={API_KEY}&t={title}"
+                api_key = "93630ab7"
+                url = f"http://www.omdbapi.com/?apikey={api_key}&t={title}"
                 request_movie = requests.get(url)
                 movie = request_movie.json()
                 if movie["Response"] == "True":
-                    movie_title = movie["Title"]
+                    title = movie["Title"]
                     year = movie["Year"]
                     rating = movie["imdbRating"]
                     poster = movie["Poster"]
-                    self._storage.add_movie(movie_title, year, rating, poster)
+                    self._storage.add_movie(title, year, rating, poster)
                     print(f"\nYou've added the movie '{title}'")
                 elif movie["Response"] == "False":
                     print(f"\n{movie["Error"]}")
@@ -171,6 +171,27 @@ class MovieApp:
             print(f"{most_frequent_movie}: {most_frequent_rating}")
             del copy_of_dictionary_of_movies[most_frequent_movie]
 
+
+    def _generate_website(self):
+        movies = self._storage.list_movies()
+        content = ''
+        for movie, movie_info in movies.items():
+            content += '<li>\n'
+            content += '  <div class="movie">\n'
+            content += '      <img class="movie-poster"\n'
+            content += f'          src={movie_info["poster"]}/>\n'
+            content += f'      <div class="movie-title">{movie}</div>\n'
+            content += f'      <div class="movie-year">{movie_info["year"]}</div>\n'
+            content += '  </div>\n'
+            content += '</li>\n'
+        with open("index_template.html", "r") as template_html_data:
+            template_html_data = template_html_data.read()
+            new_html_data = template_html_data.replace("__TEMPLATE_MOVIE_GRID__", content)
+        with open("index.html", "w") as html_file:
+            html_file.write(new_html_data)
+        print("Website was generated successfully.")
+
+
     def run(self):
         print("MY MOVIE DATABASE")
 
@@ -184,16 +205,17 @@ class MovieApp:
             "5. Stats",
             "6. Random movie",
             "7. Search movie",
-            "8. Movies sorted by rating"
+            "8. Movies sorted by rating",
+            "9. Generate website"
         ]
 
         running_program = True
         while running_program:
             try:
                 print("\n".join(menu))
-                user_choose_option = int(input("\nChoose an option from the menu (0-8): "))
-                if user_choose_option < 0 or user_choose_option > 8:
-                    raise ValueError("Please choose an option between 0 and 8.")
+                user_choose_option = int(input("\nChoose an option from the menu (0-9): "))
+                if user_choose_option < 0 or user_choose_option > 9:
+                    raise ValueError("Please choose an option between 0 and 9.")
                 if user_choose_option == 1:
                     self._list_movies()
                     input("\nPress ENTER to continue...")
@@ -217,6 +239,9 @@ class MovieApp:
                     input("\nPress ENTER to continue...")
                 elif user_choose_option == 8:
                     self._sorting_movies()
+                    input("\nPress ENTER to continue...")
+                elif user_choose_option == 9:
+                    self._generate_website()
                     input("\nPress ENTER to continue...")
                 elif user_choose_option == 0:
                     print("\nBye!")

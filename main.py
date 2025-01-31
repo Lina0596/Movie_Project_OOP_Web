@@ -6,7 +6,7 @@ import requests
 
 def main():
     try:
-        storage = StorageJson('movies.json')
+        storage = StorageCsv('movies.csv')
         movie_app = MovieApp(storage)
         movie_app.run()
     except ValueError as e:
