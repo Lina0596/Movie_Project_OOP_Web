@@ -174,7 +174,7 @@ class MovieApp:
 
     def _generate_website(self):
         """
-        Writes the movie data in an html file and generates a website.
+        Writes the movie data in a html file and generates a website.
         """
         movies = self._storage.list_movies()
         content = ''
