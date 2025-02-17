@@ -113,23 +113,16 @@ class MovieApp:
         median_rating = statistics.median(listed_ratings)
 
         # Calculates the best rated and the worst rated movies
-        dictionary_best_movies = {}
-        dictionary_worst_movies = {}
-        best_movie_rating = max(listed_ratings)
-        worst_movie_rating = min(listed_ratings)
-        for movie, movie_info in movies.items():
-            if movie_info["rating"] == best_movie_rating:
-                dictionary_best_movies[movie] = movie_info["rating"]
-            if movie_info["rating"] == worst_movie_rating:
-                dictionary_worst_movies[movie] = movie_info["rating"]
+        best_movie = max(movies, key=lambda movie: float(movies[movie]["rating"]))
+        best_rating = movies[best_movie]["rating"]
+        worst_movie = min(movies, key=lambda movie: float(movies[movie]["rating"]))
+        worst_rating = movies[worst_movie]["rating"]
 
         # Displays the stats of the movie dictionary
         print(f"\nAverage rating: {average_rating}")
         print(f"Median rating: {median_rating}")
-        for best_movie, best_rating in dictionary_best_movies.items():
-            print(f"Best movie: {best_movie}, {best_rating}")
-        for worst_movie, worst_rating in dictionary_worst_movies.items():
-            print(f"Worst movie: {worst_movie}, {worst_rating}")
+        print(f"Best movie: {best_movie}, {best_rating}")
+        print(f"Worst movie: {worst_movie}, {worst_rating}")
 
 
     def _random_movie(self):
@@ -229,7 +222,7 @@ class MovieApp:
                     self._delete_movie()
                     input("\nPress ENTER to continue...")
                 elif user_choose_option == 4:
-                    self._update_movie()
+                    print("Functionality to update a movie is currently not available.")
                     input("\nPress ENTER to continue...")
                 elif user_choose_option == 5:
                     self._stats_movies()
