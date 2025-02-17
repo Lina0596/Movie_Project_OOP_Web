@@ -113,16 +113,20 @@ class MovieApp:
         median_rating = statistics.median(listed_ratings)
 
         # Calculates the best rated and the worst rated movies
-        best_movie = max(movies, key=lambda movie: float(movies[movie]["rating"]))
-        best_rating = movies[best_movie]["rating"]
-        worst_movie = min(movies, key=lambda movie: float(movies[movie]["rating"]))
-        worst_rating = movies[worst_movie]["rating"]
+        max_rating = max(float(details["rating"]) for details in movies.values())
+        best_movies = [(title, details["rating"]) for title, details in movies.items() if float(details["rating"]) == max_rating]
+        min_rating = min(float(details["rating"]) for details in movies.values())
+        worst_movies = [(title, details["rating"]) for title, details in movies.items() if float(details["rating"]) == min_rating]
 
         # Displays the stats of the movie dictionary
         print(f"\nAverage rating: {average_rating}")
         print(f"Median rating: {median_rating}")
-        print(f"Best movie: {best_movie}, {best_rating}")
-        print(f"Worst movie: {worst_movie}, {worst_rating}")
+        print(f"Best movies:")
+        for movie, rating in best_movies:
+            print(f"{movie}, {rating}")
+        print(f"Worst movies:")
+        for movie, rating in worst_movies:
+            print(f"{movie}, {rating}")
 
 
     def _random_movie(self):
